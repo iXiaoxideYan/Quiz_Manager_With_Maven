@@ -13,5 +13,5 @@ public interface IQuestionDAO {
 	
 	public List<Question> search();
 	
-	public List<Question> getById(Long id);
+	public Question getById(Long id);
 }

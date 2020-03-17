@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
 import fr.epita.quiz.data.model.Question;
@@ -18,34 +19,47 @@ public class QuestionDAO implements IQuestionDAO {
 
 	public void create(Question question) {
 		Session session = sFactory.openSession();
+		Transaction transaction = session.getTransaction();
+		transaction.begin();
 		session.save(question);
+		transaction.commit();
 
 	}
 
 	public void update(Question question) {
 		Session session = sFactory.openSession();
+		Transaction transaction = session.getTransaction();
+		transaction.begin();
 		session.update(question);
+		transaction.commit();
 
 	}
 
 	public void delete(Question question) {
 		Session session = sFactory.openSession();
+		Transaction transaction = session.getTransaction();
+		transaction.begin();
 		session.delete(question);
+		transaction.commit();
 
 	}
 
 	public List<Question> search() {
 		List<Question> list = null;
 		Session session = sFactory.openSession();
+		Transaction transaction = session.getTransaction();
+		transaction.begin();
 		list = session.createQuery("from Question", Question.class).list();
+		transaction.commit();
 		return list;
 	}
 
-	public List<Question> getById(Long id) {
-		List<Question> list = null;
+	public Question getById(Long id) {
 		Session session = sFactory.openSession();
-		list = session.createQuery("FROM Question q where q.id = :id", Question.class).setParameter("id", id).list();
-		return list;
-
+		Transaction transaction = session.getTransaction();
+		transaction.begin();
+		Question question = (Question) session.get(Question.class, id);
+		transaction.commit();
+		return question;
 	}
 }

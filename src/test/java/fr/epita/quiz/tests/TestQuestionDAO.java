@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +19,8 @@ import fr.epita.quiz.service.QuestionDAO;
 @ContextConfiguration(locations = "/applicationContext.xml")
 public class TestQuestionDAO {
 	
+	private static final Logger LOGGER = LogManager.getLogger(Question.class);
+
 	@Inject
 	QuestionDAO dao;
 	
@@ -26,18 +30,26 @@ public class TestQuestionDAO {
 		dao.create(question);
 		
 		Assert.assertNotEquals(0l, question.getId().longValue());
+		LOGGER.info("get question {}", question.getId());
+		
 	}
 	
 	@Test
 	public void testUpdateMethod() {
 		Question question = new Question();
 		question.setId(1l);
-		dao.create(question);
-		
-		question.setId(10l);
+		question.setQuestion(null);
 		dao.update(question);
 		
-		Assert.assertEquals(10l, question.getId().longValue());
+		Question q = dao.getById(1l);
+		Assert.assertEquals(null, q.getQuestion());
+		
+		question.setQuestion("who are you?");	
+		dao.update(question);
+		q = dao.getById(1l);
+		
+		Assert.assertEquals("who are you?", q.getQuestion());
+		
 	}
 	
 	@Test
@@ -47,25 +59,31 @@ public class TestQuestionDAO {
 		dao.create(question);
 		
 		dao.delete(question);
-		Assert.assertEquals(0, dao.getById(question.getId()).size());
+		Assert.assertEquals(null, dao.getById(question.getId()));
 	}
 	
 	@Test
 	public void testSearch() {
 		dao.create(new Question());
 		List<Question> list = dao.search();
-		
+
 		Assert.assertNotNull(list);
 	}
 	
 	@Test
 	public void testGetById() {
 		Long testid = 2l;
+		String testquestion = "who are you?";
 		Question question = new Question();
 		question.setId(testid);
+		question.setQuestion(testquestion);
 		dao.create(question);
 		
-		List<Question> list = dao.getById(testid);
-		Assert.assertNotNull(list);
+		Question q = dao.getById(testid);
+		Assert.assertNotNull(q);
+		LOGGER.info("---------- {}", q.getId());
+		LOGGER.info("---------- {}", q.getQuestion());
+		Assert.assertEquals(testid, q.getId());
+		Assert.assertEquals(testquestion, q.getQuestion());
 	}
 }
