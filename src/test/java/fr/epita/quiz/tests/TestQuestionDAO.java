@@ -2,18 +2,17 @@ package fr.epita.quiz.tests;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fr.epita.quiz.data.model.Question;
-import fr.epita.quiz.service.QuestionDAO;
+import fr.epita.quiz.service.GerneralDAO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
@@ -21,8 +20,8 @@ public class TestQuestionDAO {
 	
 	private static final Logger LOGGER = LogManager.getLogger(Question.class);
 
-	@Inject
-	QuestionDAO dao;
+	@Autowired
+	GerneralDAO<Question, Long> dao;
 	
 	@Test
 	public void testCreateMethod() {
@@ -64,8 +63,9 @@ public class TestQuestionDAO {
 	
 	@Test
 	public void testSearch() {
-		dao.create(new Question());
-		List<Question> list = dao.search();
+		Question question = new Question();
+		dao.create(question);
+		List<Question> list = dao.search(question);
 
 		Assert.assertNotNull(list);
 	}

@@ -1,23 +1,30 @@
 package fr.epita.quiz.service;
 
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
+import javax.persistence.Query;
 
 import fr.epita.quiz.data.model.Answer;
+import fr.epita.quiz.data.model.Exam;
+import fr.epita.quiz.data.model.User;
 
-public class AnswerDAO {
-	@Autowired
-	SessionFactory sFactory;
-	
-	public void create(Answer ans) {
+public class AnswerDAO extends GerneralDAO<Answer, Long>{
 
+	@Override
+	public List<Answer> search(Answer criteria) {
+		User userParam = criteria.getUser();
+		Exam examParam = criteria.getExam();
+		
+		Query searchQuery = em.createQuery("from Answer where title = :pTitle And pUser");
+		searchQuery.setParameter("pTitle", examParam);
+		searchQuery.setParameter("pUser", userParam);
+		@SuppressWarnings("unchecked")
+		List<Answer> resultList = searchQuery.getResultList();
+		return resultList;
 	}
 
-	public void update(Answer ans) {
-		
-	}
-
-	public void delete(Answer ans) {
-		
+	@Override
+	public Answer getById(Long id) {
+		return em.find(Answer.class, id);
 	}
 }
